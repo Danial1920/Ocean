@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <fcntl.h>
 
-// Функция для неблокирующего ввода
+
 bool keyPressed() {
     struct termios oldt, newt;
     int ch;
@@ -38,14 +38,13 @@ bool keyPressed() {
     return false;
 }
 
-// Очистка экрана
+
 void clearScreen() {
-    std::cout << "\033[2J\033[1;1H"; // ANSI escape codes for clearing screen
+    std::cout << "\033[2J\033[1;1H"; 
 }
 
 enum class EntityType { Sand, Algae, HerbivoreFish, PredatorFish };
 
-// Интерфейс для доступа к океану (только чтение)
 class IOcean {
 public:
     virtual ~IOcean() = default;
@@ -55,13 +54,11 @@ public:
     virtual int getHeight() const = 0;
 };
 
-// Интерфейс для записи в океан
 class IWritableOcean : public IOcean {
 public:
     virtual void setCell(int x, int y, EntityType type) = 0;
 };
 
-// Базовый класс для всех сущностей
 class Entity {
 public:
     virtual ~Entity() = default;
@@ -70,7 +67,6 @@ public:
     virtual void tick(int x, int y, IOcean& current, IWritableOcean& next) = 0;
 };
 
-// Пустая ячейка
 class Sand : public Entity {
 public:
     EntityType getType() const override { return EntityType::Sand; }
@@ -78,7 +74,7 @@ public:
     void tick(int, int, IOcean&, IWritableOcean&) override {}
 };
 
-// Водоросли
+
 class Algae : public Entity {
     int age = 0;
     static constexpr int MAX_AGE = 20;
@@ -93,7 +89,6 @@ public:
         age++;
         if (age > MAX_AGE) return;
 
-        // Размножение в соседние клетки
         if (age >= REPRODUCE_AGE) {
             std::vector<std::pair<int, int>> emptyNeighbors;
             for (int dx = -1; dx <= 1; ++dx) {
@@ -122,7 +117,6 @@ public:
     }
 };
 
-// Травоядная рыба
 class HerbivoreFish : public Entity {
     int age = 0;
     int hunger = 0;
@@ -141,7 +135,6 @@ public:
         hunger++;
         if (age > MAX_AGE || hunger > MAX_HUNGER) return;
 
-        // Поиск пищи (водорослей)
         std::vector<std::pair<int, int>> algaePositions;
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
@@ -165,7 +158,6 @@ public:
             new_y = ay;
             hunger = std::max(0, hunger - HUNGER_DECREASE);
         } else {
-            // Случайное перемещение
             std::vector<std::pair<int, int>> possibleMoves;
             for (int dx = -1; dx <= 1; ++dx) {
                 for (int dy = -1; dy <= 1; ++dy) {
@@ -187,7 +179,6 @@ public:
             }
         }
 
-        // Размножение
         if (age >= REPRODUCE_AGE) {
             std::vector<std::pair<int, int>> emptyNeighbors;
             for (int dx = -1; dx <= 1; ++dx) {
@@ -215,7 +206,6 @@ public:
     }
 };
 
-// Хищная рыба
 class PredatorFish : public Entity {
     int age = 0;
     int hunger = 0;
@@ -234,7 +224,6 @@ public:
         hunger++;
         if (age > MAX_AGE || hunger > MAX_HUNGER) return;
 
-        // Поиск пищи (травоядных рыб)
         std::vector<std::pair<int, int>> fishPositions;
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
@@ -258,7 +247,6 @@ public:
             new_y = fy;
             hunger = std::max(0, hunger - HUNGER_DECREASE);
         } else {
-            // Случайное перемещение
             std::vector<std::pair<int, int>> possibleMoves;
             for (int dx = -1; dx <= 1; ++dx) {
                 for (int dy = -1; dy <= 1; ++dy) {
@@ -280,7 +268,6 @@ public:
             }
         }
 
-        // Размножение
         if (age >= REPRODUCE_AGE) {
             std::vector<std::pair<int, int>> emptyNeighbors;
             for (int dx = -1; dx <= 1; ++dx) {
@@ -307,8 +294,6 @@ public:
         next.setCell(new_x, new_y, EntityType::PredatorFish);
     }
 };
-
-// Реализация океана с использованием Pimpl
 class Ocean : public IWritableOcean {
 public:
     Ocean(int width, int height);
@@ -318,7 +303,6 @@ public:
     Ocean& operator=(const Ocean& other);
     Ocean& operator=(Ocean&& other) noexcept;
 
-    // IWritableOcean interface
     EntityType getCellType(int x, int y) const override;
     void setCell(int x, int y, EntityType type) override;
     bool inBounds(int x, int y) const override;
@@ -336,7 +320,6 @@ private:
     std::unique_ptr<Impl> pimpl;
 };
 
-// Внутренняя реализация океана
 class Ocean::Impl : public IWritableOcean {
 public:
     Impl(int width, int height) 
@@ -367,8 +350,6 @@ public:
     int width;
     int height;
 };
-
-// Реализация методов Ocean с использованием Pimpl
 Ocean::Ocean(int width, int height) 
     : pimpl(std::make_unique<Impl>(width, height)) {}
 
@@ -480,7 +461,7 @@ int main() {
         for (int i = 0; i < 100; ++i) {
             ocean.tick();
             
-            clearScreen(); // Очищаем экран перед каждым выводом
+            clearScreen(); 
             
             std::cout << "Tick " << i + 1 << ":\n";
             std::cout << "  Algae: " << ocean.countEntities<EntityType::Algae>() << "\n";
@@ -488,15 +469,13 @@ int main() {
             std::cout << "  PredatorFish: " << ocean.countEntities<EntityType::PredatorFish>() << "\n";
             std::cout << "\nPress space to pause, any other key to continue...";
             
-            // Добавляем задержку для визуализации
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             
-            // Проверка нажатия клавиши
             if (keyPressed()) {
                 char c = getchar();
                 if (c == ' ') {
                     std::cout << "\nSimulation paused. Press any key to continue...";
-                    getchar(); // Ждем нажатия для продолжения
+                    getchar(); 
                 }
             }
         }
