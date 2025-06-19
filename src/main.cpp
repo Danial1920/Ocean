@@ -26,7 +26,7 @@ int main(int argc, char* args[]) {
     const int cellSize = 15;
 
     int windowWidth = oceanWidth * cellSize;
-    int windowHeight = oceanHeight * cellSize + 50;
+    int windowHeight = oceanHeight * cellSize + 50; 
 
     SDL_Window* window = SDL_CreateWindow(
         "Ocean Simulation (SDL2)",
@@ -108,7 +108,7 @@ int main(int argc, char* args[]) {
             lastTickTime = currentTime;
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 50, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 50, 255); 
         SDL_RenderClear(renderer);
 
         for (int y = 0; y < ocean.getHeight(); ++y) {
@@ -117,16 +117,16 @@ int main(int argc, char* args[]) {
 
                 switch (ocean.getCellType(x, y)) {
                     case EntityType::Sand:
-                        SDL_SetRenderDrawColor(renderer, 0, 0, 70, 255);
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 70, 255); 
                         break;
                     case EntityType::Algae:
-                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
                         break;
                     case EntityType::HerbivoreFish:
-                        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); 
                         break;
                     case EntityType::PredatorFish:
-                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); 
                         break;
                 }
                 SDL_RenderFillRect(renderer, &cellRect);
@@ -134,11 +134,11 @@ int main(int argc, char* args[]) {
         }
 
         std::string stats = "Tick: " + std::to_string(ticksCount) +
-                            "   Algae: " + std::to_string(ocean.countEntities<EntityType::Algae>()) +
-                            "   Herbivores: " + std::to_string(ocean.countEntities<EntityType::HerbivoreFish>()) +
-                            "   Predators: " + std::to_string(ocean.countEntities<EntityType::PredatorFish>());
+                            "   Algae: " + std::to_string(ocean.countEntities(EntityType::Algae)) +
+                            "   Herbivores: " + std::to_string(ocean.countEntities(EntityType::HerbivoreFish)) +
+                            "   Predators: " + std::to_string(ocean.countEntities(EntityType::PredatorFish));
 
-        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Color textColor = {255, 255, 255, 255}; 
         SDL_Surface* textSurface = TTF_RenderText_Solid(font, stats.c_str(), textColor);
         if (textSurface == nullptr) {
             std::cerr << "Unable to render text surface! TTF_Error: " << TTF_GetError() << std::endl;
@@ -147,14 +147,14 @@ int main(int argc, char* args[]) {
             if (textTexture == nullptr) {
                 std::cerr << "Unable to create texture from rendered text! SDL_Error: " << SDL_GetError() << std::endl;
             } else {
-                SDL_Rect textRect = {10, windowHeight - 40, textSurface->w, textSurface->h};
+                SDL_Rect textRect = {10, windowHeight - 40, textSurface->w, textSurface->h}; 
                 SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
                 SDL_DestroyTexture(textTexture);
             }
             SDL_FreeSurface(textSurface);
         }
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(renderer); 
     }
 
     TTF_CloseFont(font);

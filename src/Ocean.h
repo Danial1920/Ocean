@@ -2,7 +2,7 @@
 #define OCEAN_H
 
 #include "IWritableOcean.h"
-#include "EntityType.h"
+#include "EntityType.h" // Убедитесь, что этот файл существует и содержит enum class EntityType
 #include <memory>
 #include <vector>
 #include <stdexcept>
@@ -27,8 +27,8 @@ public:
     void tick();
     void randomFill(int algaeCount, int herbivoreCount, int predatorCount);
 
-    template <EntityType T>
-    int countEntities() const;
+    // ИСПРАВЛЕНИЕ: Теперь countEntities принимает EntityType как обычный аргумент
+    int countEntities(EntityType type) const; 
 
 private:
     class Impl : public IWritableOcean {
@@ -50,4 +50,4 @@ private:
     std::unique_ptr<Impl> pimpl;
 };
 
-#endif 
+#endif

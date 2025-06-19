@@ -1,9 +1,12 @@
 #include "Ocean.h"
-#include "Sand.h"
-#include "Algae.h"
-#include "HerbivoreFish.h"
-#include "PredatorFish.h"
+#include "Sand.h"          
+#include "Algae.h"         
+#include "HerbivoreFish.h" 
+#include "PredatorFish.h"  
+#include "Entity.h" 
+
 #include <iostream>
+#include <stdexcept> 
 
 Ocean::Impl::Impl(int width, int height) : width(width), height(height) {
     grid.resize(width);
@@ -95,7 +98,7 @@ void Ocean::tick() {
     for (int x = 0; x < getWidth(); ++x) {
         for (int y = 0; y < getHeight(); ++y) {
             EntityType type = getCellType(x, y);
-            std::unique_ptr<Entity> entity;
+            std::unique_ptr<Entity> entity; 
 
             switch (type) {
                 case EntityType::Algae:
@@ -143,19 +146,14 @@ void Ocean::randomFill(int algaeCount, int herbivoreCount, int predatorCount) {
     placeEntities(predatorCount, EntityType::PredatorFish);
 }
 
-template <EntityType T>
-int Ocean::countEntities() const {
+int Ocean::countEntities(EntityType type) const {
     int count = 0;
     for (int x = 0; x < getWidth(); ++x) {
         for (int y = 0; y < getHeight(); ++y) {
-            if (getCellType(x, y) == T) {
+            if (getCellType(x, y) == type) { 
                 count++;
             }
         }
     }
     return count;
 }
-
-template int Ocean::countEntities<EntityType::Algae>() const;
-template int Ocean::countEntities<EntityType::HerbivoreFish>() const;
-template int Ocean::countEntities<EntityType::PredatorFish>() const;
